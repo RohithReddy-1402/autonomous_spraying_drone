@@ -10,6 +10,7 @@ def create_mask(frame):
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     mask = cv2.GaussianBlur(mask, (5, 5), 0)
     return mask
+
 def red_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     lower_red1 = np.array([0, 100, 100])
@@ -40,7 +41,6 @@ def detect_red_in_leaves(contour, frame):
     total_leaf_pixels = cv2.countNonZero(leaf_mask)
     if total_leaf_pixels == 0:
         return 0  
-
     red_percent = (red_pixels / total_leaf_pixels) * 100
     return red_percent
 
@@ -55,9 +55,11 @@ def centroid( contour):
         return (-1, -1)
     return (x, y)
 
-def find_contours( thresh_img):
+def find_contours(thresh_img):
     contours, _ = cv2.findContours(thresh_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     return contours
+
+url="http://10.24.186.79:8080/video"
 cap=cv2.VideoCapture(0)
 def get_centroid(frame):
     mask = create_mask(frame)
@@ -72,6 +74,7 @@ def get_centroid(frame):
         cv2.circle(frame, (cx, cy), 5, (0, 0, 255), -1)
     print(f"Total red percentage in leaves: {total:.2f}%")
     return centroids
+
 while True:
     sucess,frame=cap.read()
     if not sucess:
@@ -81,5 +84,6 @@ while True:
     cv2.imshow("Leaf Detection", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 cap.release()
 cv2.destroyAllWindows()
